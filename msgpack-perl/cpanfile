@@ -1,0 +1,3 @@
+requires 'Plack::Request';
+requires 'JSON::XS';
+requires 'Data::MessagePack';
