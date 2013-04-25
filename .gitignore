@@ -1,0 +1,13 @@
+# for editors
+.*.sw[p|o|n]
+*.sw[p|o|n]
+*.un~
+*\#*
+*~
+\#*\#
+*.bak
+*.o
+*.obj
+*.bk
+*.def
+*.local

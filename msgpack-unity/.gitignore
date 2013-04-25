@@ -1,0 +1,12 @@
+#Unity3D
+*.sln
+*.userprefs
+*.csproj
+*.pidb
+*.unityproj
+.DS_Store
+._*
+Thumbs.db
+/Library/
+/obj/
+/Temp/
