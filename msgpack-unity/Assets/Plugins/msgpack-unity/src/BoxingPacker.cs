@@ -19,12 +19,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace MsgPack
 {
 	public class BoxingPacker
 	{
 		static Type KeyValuePairDefinitionType;
+
+		static UTF8Encoding utf8enc = new UTF8Encoding();
 
 		static BoxingPacker ()
 		{
@@ -69,6 +72,11 @@ namespace MsgPack
 				return;
 			}
 
+			if (t.Equals (typeof (string)) ) {
+				writer.Write((string) o);
+				return;
+			}
+
 			IDictionary dic = o as IDictionary;
 			if (dic != null) {
 				writer.WriteMapHeader (dic.Count);
@@ -78,7 +86,15 @@ namespace MsgPack
 				}
 				return;
 			}
-			
+
+			IList list = o as IList;
+			if (list != null) {
+				writer.WriteArrayHeader (list.Count);
+				foreach (object v in list)
+					Pack (writer, v);
+				return;
+			}
+
 			if (t.IsArray) {
 				Array ary = (Array)o;
 				Type et = t.GetElementType ();
@@ -102,6 +118,8 @@ namespace MsgPack
 					Pack (writer, ary.GetValue (i));
 				return;
 			}
+
+			throw new NotSupportedException(o.ToString() + ":" + t.ToString());
 		}
 
 		public object Unpack (Stream strm)
@@ -157,21 +175,22 @@ namespace MsgPack
 				case TypePrefixes.Raw32:
 					byte[] raw = new byte[reader.Length];
 					reader.ReadValueRaw (raw, 0, raw.Length);
-					return raw;
+					return utf8enc.GetString(raw);
+					//return raw;
 				case TypePrefixes.FixArray:
 				case TypePrefixes.Array16:
 				case TypePrefixes.Array32:
 					object[] ary = new object[reader.Length];
 					for (int i = 0; i < ary.Length; i ++)
 						ary[i] = Unpack (reader);
-					return ary;
+					return new List<object>(ary);
 				case TypePrefixes.FixMap:
 				case TypePrefixes.Map16:
 				case TypePrefixes.Map32:
-					IDictionary<object, object> dic = new Dictionary<object, object> ((int)reader.Length);
+					IDictionary<string, object> dic = new Dictionary<string, object> ((int)reader.Length);
 					int count = (int)reader.Length;
 					for (int i = 0; i < count; i ++) {
-						object k = Unpack (reader);
+						string k = (string) Unpack (reader);
 						object v = Unpack (reader);
 						dic.Add (k, v);
 					}
