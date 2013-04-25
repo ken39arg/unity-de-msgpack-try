@@ -1,13 +1,14 @@
 use Plack::Request;
 use JSON::XS;
 use Data::MessagePack;
+use Data::Dumper;
 
 my $serialize = {
     json => sub {
-        JSON::XS::encode_json(shift);
+        JSON::XS::encode_json($_[0]);
     },
     msgpack => sub {
-        Data::MessagePack->pack(shift);
+        Data::MessagePack->pack($_[0]);
     },
     default => sub {
         "";
@@ -16,10 +17,10 @@ my $serialize = {
 
 my $deserialize = {
     json => sub {
-        JSON::XS::decode_json(shift);
+        JSON::XS::decode_json($_[0]);
     },
     msgpack => sub {
-        Data::MessagePack->unpack(shift);
+        Data::MessagePack->unpack($_[0]);
     },
     default => sub {
         {};
