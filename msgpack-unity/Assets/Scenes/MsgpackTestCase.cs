@@ -11,6 +11,7 @@ namespace chomechomo
 {
     public class MsgpackTestCase : UnityTestCase {
         public override void SetUp() {
+            Application.targetFrameRate = 1000;
         }
 
         public override void TearDown() {
