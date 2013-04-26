@@ -1,3 +1,7 @@
 requires 'Plack::Request';
 requires 'JSON::XS';
 requires 'Data::MessagePack';
+requires 'Benchmark';
+requires 'Devel::Size';
+requires 'HTTP::Request';
+requires 'LWP::UserAgent';
